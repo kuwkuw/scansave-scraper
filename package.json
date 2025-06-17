@@ -1,0 +1,22 @@
+{
+  "name": "supermarket-scraper-backend",
+  "version": "1.0.0",
+  "description": "Node.js backend for supermarket price aggregation",
+  "main": "dist/index.js",
+  "scripts": {
+    "start": "node dist/index.js",
+    "dev": "ts-node src/index.ts",
+    "build": "tsc"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "puppeteer": "^22.15.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
+  }
+}
