@@ -1,10 +1,11 @@
-// backend/src/scrapers/silpoScraper.ts
-import puppeteer, { Page } from 'puppeteer';
+import puppeteer from 'puppeteer';
 import { SUPERMARKET_CONFIGS, ScrapedProduct } from '../../config';
-import type { SupermarketConfig } from '../../config';
 
-// Get the specific configuration for Silpo
 const config = SUPERMARKET_CONFIGS.silpo;
+
+function buildCategoryUrl(categoryUrl: string): string {
+  return categoryUrl.startsWith('http') ? categoryUrl : config.baseUrl + categoryUrl;
+}
 
 /**
  * Scrapes a specific category page on Silpo's website.
@@ -13,8 +14,7 @@ const config = SUPERMARKET_CONFIGS.silpo;
  * @returns A promise that resolves to an array of ScrapedProduct objects.
  */
 async function scrapeSilpoCategory(categoryUrl: string, categoryName: string): Promise<ScrapedProduct[]> {
-  // If the categoryUrl is a relative path, prepend the baseUrl
-  let fullCategoryUrl = categoryUrl.startsWith('http') ? categoryUrl : config.baseUrl + categoryUrl;
+  const fullCategoryUrl = buildCategoryUrl(categoryUrl);
 
   // Launch a new headless browser instance with improved options
   const browser = await puppeteer.launch({
@@ -64,7 +64,7 @@ async function scrapeSilpoCategory(categoryUrl: string, categoryName: string): P
     // `page.evaluate()` executes a function directly in the browser's context.
     // This is efficient because Puppeteer doesn't need to constantly communicate
     // between Node.js and the browser for each element.
-    const extractedData = await page.evaluate((selectors, storeName, currentCategoryName) => {
+    const extractedData: ScrapedProduct[] = await page.evaluate((selectors, storeName, currentCategoryName) => {
       const scrapedItems: ScrapedProduct[] = []; // Array to hold the extracted products
 
       // Get all product card elements on the page
@@ -76,8 +76,8 @@ async function scrapeSilpoCategory(categoryUrl: string, categoryName: string): P
           const nameElement = card.querySelector(selectors.productName);
           const priceElement = card.querySelector(selectors.currentPrice);
           const oldPriceElement = card.querySelector(selectors.oldPrice);
-          const imageElement = card.querySelector(selectors.imageUrl);
-          const productLinkElement = card.querySelector(selectors.productLink);
+          const imageElement = card.querySelector(selectors.imageUrl) as HTMLImageElement | null;
+          const productLinkElement = card.querySelector(selectors.productLink) as HTMLAnchorElement | null;
 
           // Extract text content and attributes with proper type validation
           const name = nameElement?.textContent?.trim() || 'Unknown Product';
@@ -95,8 +95,8 @@ async function scrapeSilpoCategory(categoryUrl: string, categoryName: string): P
             oldPrice = parseFloat(oldPriceText.replace(/[^\d.,]/g, '').replace(',', '.'));
           }
 
-          const imageUrl = imageElement ? (imageElement as HTMLImageElement).src : undefined;
-          const productUrl = productLinkElement ? (productLinkElement as HTMLAnchorElement).href : undefined;
+          const imageUrl = imageElement ? imageElement.src : undefined;
+          const productUrl = productLinkElement ? productLinkElement.href : undefined;
 
           // Basic validation before adding to results
           if (name !== 'N/A' && !isNaN(price) && price > 0) {
@@ -120,27 +120,6 @@ async function scrapeSilpoCategory(categoryUrl: string, categoryName: string): P
     }, config.selectors, config.name, categoryName); // Arguments passed to the page.evaluate function
 
     products.push(...extractedData);
-
-    // --- Pagination Logic (Conceptual) ---
-    // This part is highly website-specific. Here's a conceptual example for a "Next Page" button.
-    // Many sites use infinite scroll, which requires simulating scrolling down.
-    //
-    // const nextPageButton = await page.$(config.selectors.nextPageButton);
-    // if (nextPageButton) {
-    //   console.log(`[${config.name}] Found 'Next Page' button. Clicking...`);
-    //   await Promise.all([
-    //     nextPageButton.click(),
-    //     page.waitForNavigation({ waitUntil: 'domcontentloaded', timeout: 30000 }), // Wait for page navigation
-    //     // Or if it's infinite scroll, wait for new products to load after scrolling:
-    //     // page.waitForFunction(() => document.querySelectorAll('.product-card').length > initialProductCount)
-    //   ]);
-    //   console.log(`[${config.name}] Navigated to next page. Recursively scraping...`);
-    //   // Recursively call this function to scrape the next page and combine results
-    //   const moreProducts = await scrapeSilpoCategory(page.url(), categoryName); // Use the new URL after navigation
-    //   products.push(...moreProducts);
-    // } else {
-    //   console.log(`[${config.name}] No 'Next Page' button found or end of pagination.`);
-    // }
 
     console.log(`[${config.name}] Finished extraction for ${categoryName}. Total products: ${products.length}.`);
 
