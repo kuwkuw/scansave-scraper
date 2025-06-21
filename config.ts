@@ -110,6 +110,6 @@ export interface ScrapedProduct {
   imageUrl?: string;
   store: string; // Name of the store (e.g., "Silpo")
   category: string; // Category name (e.g., "Dairy")
-  lastUpdated: Date;
+  lastUpdated: string; // Use ISO string for serialization compatibility
   productUrl: string; // Direct URL to the product on the store's website
 }

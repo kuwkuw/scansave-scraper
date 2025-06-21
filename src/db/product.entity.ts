@@ -24,8 +24,8 @@ export class Product {
   @Column({ nullable: true })
   category!: string;
 
-  @Column({ type: 'timestamp', nullable: false })
-  lastUpdated!: Date;
+@Column({ type: 'timestamp', nullable: false })
+lastUpdated!: Date;
 
   @Column({ name: 'product_url', nullable: false })
   productUrl!: string;

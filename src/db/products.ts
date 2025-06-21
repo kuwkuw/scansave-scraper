@@ -22,7 +22,7 @@ export async function saveProductsToDatabase(products: ScrapedProduct[]): Promis
       imageUrl: p.imageUrl,
       store: p.store,
       category: p.category,
-      lastUpdated: p.lastUpdated,
+      lastUpdated: typeof p.lastUpdated === 'string' ? new Date(p.lastUpdated) : p.lastUpdated,
       productUrl: p.productUrl,
     }));
     await productRepo.save(productEntities);

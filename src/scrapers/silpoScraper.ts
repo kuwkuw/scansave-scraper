@@ -70,6 +70,11 @@ async function scrapeSilpoCategory(categoryUrl: string, categoryName: string): P
 
       // Get all product card elements on the page
       const productCards = Array.from(document.querySelectorAll(selectors.productCard));
+      console.log(`Found ${productCards.length} product cards on page: ${currentCategoryName}`);
+      if (productCards.length > 0) {
+        // Log the outer HTML of the first product card for debugging
+        console.log('First product card HTML:', productCards[0].outerHTML);
+      }
 
       productCards.forEach(card => {
         try {
@@ -86,7 +91,6 @@ async function scrapeSilpoCategory(categoryUrl: string, categoryName: string): P
           let price = 0;
           if (priceElement) {
             let priceText = priceElement.textContent?.trim() || '';
-            // Use the parsePrice function from config for consistent cleaning
             price = parseFloat(priceText.replace(/[^\d.,]/g, '').replace(',', '.'));
           }
 
@@ -97,30 +101,38 @@ async function scrapeSilpoCategory(categoryUrl: string, categoryName: string): P
           }
 
           const imageUrl = imageElement ? imageElement.src : undefined;
-          const productUrl = productLinkElement ? productLinkElement.href : undefined;
+          const productUrl = productLinkElement ? productLinkElement.href : '';
+
+          // Log extracted values for debugging
+          console.log({ name, price, oldPrice, imageUrl, productUrl });
 
           // Basic validation before adding to results
           if (name !== 'N/A' && !isNaN(price) && price > 0) {
-            scrapedItems.push({
+            const product: ScrapedProduct = {
               name,
               price,
               oldPrice,
               imageUrl,
-              store: storeName, // From config
-              category: currentCategoryName, // From function argument
-              lastUpdated: new Date(), // Current time of scrape
-              productUrl: productUrl || categoryUrl, // Use specific product URL if found, else category URL
-            });
+              store: storeName,
+              category: currentCategoryName,
+              lastUpdated: new Date().toISOString(), // Serialize as ISO string
+              productUrl,
+            };
+
+            scrapedItems.push(product);
           }
         } catch (innerError) {
           console.warn(`[${storeName}] Error processing a product card: ${innerError}`);
-          // You might want to log the HTML of the problematic card for debugging
         }
       });
       return scrapedItems;
     }, config.selectors, config.name, categoryName); // Arguments passed to the page.evaluate function
 
-    products.push(...extractedData);
+    // Ensure lastUpdated is a string (ISO) for ScrapedProduct compatibility
+    products.push(...extractedData.map(product => ({
+      ...product,
+      lastUpdated: typeof product.lastUpdated === 'string' ? product.lastUpdated : new Date(product.lastUpdated).toISOString(),
+    })));
 
     console.log(`[${config.name}] Finished extraction for ${categoryName}. Total products: ${products.length}.`);
 
