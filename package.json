@@ -12,7 +12,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "puppeteer": "^22.15.0"
+    "puppeteer": "^22.15.0",
+    "typeorm": "^0.3.25",
+    "pg": "^8.16.2"
   },
   "devDependencies": {
     "@types/node": "^20.19.1",
