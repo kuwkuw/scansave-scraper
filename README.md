@@ -11,19 +11,35 @@ A Node.js/TypeScript backend service that scrapes and aggregates product prices 
 - 🔍 Price monitoring and tracking
 - ⚡ TypeScript for type safety and better development experience
 
+## Environment Variables
+
+Copy `.env.example` to `.env` and fill in your database credentials:
+
+```
+DB_HOST=localhost
+DB_PORT=5432
+DB_USER=postgres
+DB_PASS=yourpassword
+DB_NAME=scansave
+```
+
 ## Project Structure
 
 ```
 scraper/
 ├── src/
 │   ├── index.ts           # Application entry point
-│   ├── api/              # API endpoints and handlers
-│   │   └── products.ts   # Product-related API endpoints
-│   └── scrapers/         # Store-specific scrapers
+│   ├── db/                # Database logic (entities, connection, save logic)
+│   │   ├── connection.ts  # Centralized TypeORM connection helper
+│   │   ├── product.entity.ts # Product entity definition
+│   │   └── products.ts    # Product save logic
+│   └── scrapers/          # Store-specific scrapers
 │       └── silpoScraper.ts  # Silpo supermarket scraper
-├── config.ts             # Configuration settings
-├── package.json         # Project dependencies
-└── tsconfig.json       # TypeScript configuration
+├── config.ts              # Configuration settings
+├── package.json           # Project dependencies
+├── tsconfig.json          # TypeScript configuration
+├── .env.example           # Example environment variables
+└── README.md              # Project documentation
 ```
 
 ## Prerequisites

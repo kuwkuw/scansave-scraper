@@ -5,7 +5,7 @@
 import { scrapeSilpoCategory } from './scrapers/silpoScraper';
 // import { scrapeAtbCategory } from './scrapers/atbScraper'; // Uncomment and import when you create atbScraper.ts
 import { SUPERMARKET_CONFIGS } from '../config';
-import { saveProductsToDatabase } from './api/products';// Function to handle data persistence
+import { saveProductsToDatabase } from './db/products';// Function to handle data persistence
 
 /**
  * Main function to orchestrate the scraping process for all configured supermarkets.

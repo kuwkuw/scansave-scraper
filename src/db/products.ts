@@ -1,9 +1,8 @@
-// This file would handle sending the scraped data to your actual database or backend API.
-// For now, it provides a mock function that simply logs the data.
-
+// Moved from src/api/products.ts
 import { ScrapedProduct } from "../../config";
-import { createConnection, getConnection, getRepository } from 'typeorm';
+import { getRepository } from 'typeorm';
 import { Product } from './product.entity';
+import { getOrCreateConnection } from './connection';
 
 export async function saveProductsToDatabase(products: ScrapedProduct[]): Promise<void> {
   console.log(`\n--- Directly Saving ${products.length} Products to Database ---`);
@@ -13,23 +12,7 @@ export async function saveProductsToDatabase(products: ScrapedProduct[]): Promis
     return;
   }
 
-  // Try to get existing connection or create a new one
-  let connection;
-  try {
-    connection = getConnection();
-  } catch (e) {
-    connection = await createConnection({
-      type: 'postgres',
-      host: process.env.DB_HOST || 'localhost',
-      port: parseInt(process.env.DB_PORT || '5432'),
-      username: process.env.DB_USER || 'postgres',
-      password: process.env.DB_PASS || 'root',
-      database: process.env.DB_NAME || 'scansave',
-      entities: [Product],
-      synchronize: false, // DB schema should already exist
-    });
-  }
-
+  await getOrCreateConnection();
   const productRepo = getRepository(Product);
   try {
     const productEntities = products.map(p => productRepo.create({
@@ -48,8 +31,7 @@ export async function saveProductsToDatabase(products: ScrapedProduct[]): Promis
     if (error instanceof Error) {
       console.error('Error saving products to database:', error.message);
     } else {
-      console.error('Error saving products to database:', error);
+      console.error('Unknown error saving products to database:', error);
     }
   }
-  console.log('--------------------------------------------------');
 }

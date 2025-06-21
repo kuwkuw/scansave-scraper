@@ -1,5 +1,6 @@
 import puppeteer from 'puppeteer';
 import { SUPERMARKET_CONFIGS, ScrapedProduct } from '../../config';
+import { saveProductsToDatabase } from '../db/products';
 
 const config = SUPERMARKET_CONFIGS.silpo;
 

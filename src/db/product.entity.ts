@@ -1,3 +1,4 @@
+// Moved from src/api/product.entity.ts
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
