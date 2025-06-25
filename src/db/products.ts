@@ -24,6 +24,7 @@ export async function saveProductsToDatabase(products: ScrapedProduct[]): Promis
       category: p.category,
       lastUpdated: typeof p.lastUpdated === 'string' ? new Date(p.lastUpdated) : p.lastUpdated,
       productUrl: p.productUrl,
+      categoryUrl: p.categoryUrl,
     }));
     await productRepo.save(productEntities);
     console.log(`Saved ${productEntities.length} products.`);

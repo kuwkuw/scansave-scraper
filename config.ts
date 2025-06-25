@@ -20,87 +20,118 @@ export interface SupermarketConfig {
   parsePrice: (text: string) => number;
 }
 
-export const SUPERMARKET_CONFIGS = {
-  silpo: {
-    name: 'Silpo',
-    baseUrl: 'https://silpo.ua',
-    categories: {
-      special_offers: '/category/spetsialni-propozytsii-5189',
-      fruits_vegetables: '/category/frukty-ovochi-4788',
-      meat: '/category/m-iaso-4411',
-      fish: '/category/ryba-4430',
-      sausages_delicacies: '/category/kovbasni-vyroby-i-m-iasni-delikatesy-4731',
-      cheese: '/category/syry-1468',
-      bread_bakery: '/category/khlib-ta-vypichka-5121',
-      ready_meals: '/category/gotovi-stravy-i-kulinariia-4761',
-      dairy_eggs: '/category/molochni-produkty-ta-iaitsia-234',
-      private_labels: '/category/vlasni-marky-5202',
-      lavka_tradytsii: '/category/lavka-tradytsii-4487',
-      healthy_food: '/category/zdorove-kharchuvannia-4864',
-      groceries_canned: '/category/bakaliia-i-konservy-4870',
-      sauces_spices: '/category/sousy-i-spetsii-4938',
-      sweets: '/category/solodoshchi-498',
-      snacks_chips: '/category/sneky-ta-chypsy-5016',
-      coffee_tea: '/category/kava-chai-359',
-      drinks: '/category/napoi-52',
-      frozen: '/category/zamorozhena-produktsiia-264',
-      alcohol: '/category/alkogol-22',
-      cigarettes_gum: '/category/sygarety-stiky-zhuiky-4384',
-      flowers_garden: '/category/kvity-tovary-dlia-sadu-ta-gorodu-476',
-      home: '/category/dlia-domu-567',
-      hygiene_beauty: '/category/gigiiena-ta-krasa-4519',
-      kids: '/category/dytiachi-tovary-449',
-      pets: '/category/dlia-tvaryn-653',
-    },
-    selectors: {
-      // Selector for a single product card/container
-      productCard: '.products-list__item',
-      // Product name inside the card
-      productName: '.product-card__title',
-      // Current price
-      currentPrice: '.product-card-price__displayPrice',
-      // Old price (optional)
-      oldPrice: '.product-card-price__displayOldPrice',
-      // Product image
-      imageUrl: '.product-card__product-img',
-      // Product link (the card itself is a link)
-      productLink: 'a.product-card',
-      
-      // Pagination or "load more" button selectors (if applicable)
-      // Example: <button class="pagination__next">Next</button>
-      nextPageButton: '.pagination__button--next', // This is a placeholder, verify!
-    },
-    // Function to parse the price text, if it needs specific cleaning
-    parsePrice: (priceText: string): number => {
-      // Basic cleaning: remove non-numeric characters (except commas/periods)
-      // and replace comma with period for consistent float parsing.
-      const cleanedText = priceText.replace(/[^\d.,]/g, '').replace(',', '.');
-      return parseFloat(cleanedText);
-    }
+// Unified category mapping for all supermarkets
+export const CATEGORY_URLS = {
+  special_offers: {
+    silpo: '/category/spetsialni-propozytsii-5189',
+    atb: '/catalog/economy',
   },
-  // --- Add configurations for other supermarkets as you implement their scrapers ---
-  atb: {
-    name: 'ATB',
-    baseUrl: 'https://www.atbmarket.com',
-    // --- IMPORTANT: Update these URLs with actual category URLs from ATB.ua ---
-    categories: {
-      dairy: 'https://www.atbmarket.com/catalog/produkty/molochni-produkti-syr-yaytsya', // Verify this URL!
-    },
-    selectors: {
-      // --- IMPORTANT: Update these CSS Selectors by inspecting ATB.ua's HTML ---
-      productCard: '.product-item', // Example, verify!
-      productName: '.product-item__title', // Example, verify!
-      currentPrice: '.product-item__price-current', // Example, verify!
-      imageUrl: '.product-item__image img', // Example, verify!
-      productLink: '.product-item__link', // Example, verify!
-      nextPageButton: '.pager__next', // Example, verify!
-    },
-    parsePrice: (priceText: string): number => {
-      const cleanedText = priceText.replace(/[^\d.,]/g, '').replace(',', '.');
-      return parseFloat(cleanedText);
-    }
-  }
+  akcija_7dniv: {
+    silpo: null,
+    atb: '/catalog/388-aktsiya-7-dniv',
+  },
+  novelties: {
+    silpo: null,
+    atb: '/catalog/novetly',
+  },
+  fruits_vegetables: {
+    silpo: '/category/frukty-ovochi-4788',
+    atb: '/catalog/287-ovochi-ta-frukti',
+  },
+  meat: {
+    silpo: '/category/m-iaso-4411',
+    atb: '/catalog/maso',
+  },
+  fish: {
+    silpo: '/category/ryba-4430',
+    atb: '/catalog/593-riba',
+  },
+  sausages_delicacies: {
+    silpo: '/category/kovbasni-vyroby-i-m-iasni-delikatesy-4731',
+    atb: '/catalog/360-kovbasa-i-m-yasni-delikatesi',
+  },
+  cheese: {
+    silpo: '/category/syry-1468',
+    atb: '/catalog/siri',
+  },
+  bread_bakery: {
+    silpo: '/category/khlib-ta-vypichka-5121',
+    atb: '/catalog/325-khlibobulochni-virobi',
+  },
+  ready_meals: {
+    silpo: '/category/gotovi-stravy-i-kulinariia-4761',
+    atb: '/catalog/502-kulinariya',
+  },
+  dairy_eggs: {
+    silpo: '/category/molochni-produkty-ta-iaitsia-234',
+    atb: '/catalog/molocni-produkti-ta-ajca',
+  },
+  groceries_canned: {
+    silpo: '/category/bakaliia-i-konservy-4870',
+    atb: '/catalog/285-bakaliya',
+  },
+  sauces_spices: {
+    silpo: '/category/sousy-i-spetsii-4938',
+    atb: '/catalog/305-pripravi-ta-marinadi',
+  },
+  sweets: {
+    silpo: '/category/solodoshchi-498',
+    atb: '/catalog/299-konditers-ki-virobi',
+  },
+  snacks_chips: {
+    silpo: '/category/sneky-ta-chypsy-5016',
+    atb: '/catalog/cipsi-sneki',
+  },
+  coffee_tea: {
+    silpo: '/category/kava-chai-359',
+    atb: '/catalog/kava-caj',
+  },
+  drinks: {
+    silpo: '/category/napoi-52',
+    atb: '/catalog/307-napoi',
+  },
+  frozen: {
+    silpo: '/category/zamorozhena-produktsiia-264',
+    atb: '/catalog/322-zamorozheni-produkti',
+  },
+  alcohol: {
+    silpo: '/category/alkogol-22',
+    atb: '/catalog/292-alkogol-i-tyutyun',
+  },
+  cigarettes_gum: {
+    silpo: '/category/sygarety-stiky-zhuiky-4384',
+    atb: '/catalog/sigareti',
+  },
+  flowers_garden: {
+    silpo: '/category/kvity-tovary-dlia-sadu-ta-gorodu-476',
+    atb: '/catalog/400-sad-ta-gorod',
+  },
+  home: {
+    silpo: '/category/dlia-domu-567',
+    atb: '/catalog/358-tovari-dlya-domu',
+  },
+  hygiene_beauty: {
+    silpo: '/category/gigiiena-ta-krasa-4519',
+    atb: '/catalog/290-gigiena-i-kosmetika',
+  },
+  kids: {
+    silpo: '/category/dytiachi-tovary-449',
+    atb: '/catalog/373-tovari-dlya-ditey',
+  },
+  pets: {
+    silpo: '/category/dlia-tvaryn-653',
+    atb: '/catalog/436-tovari-dlya-tvarin',
+  },
+  // TEMPLATE: Add new categories or supermarkets as needed
+  // vegan_products: {
+  //   silpo: '/category/vegan-products-9999',
+  //   atb: null,
+  //   novus: '/catalog/vegan-novus',
+  // },
 };
+
+// Old SUPERMARKET_CONFIGS is commented out for reference
+// export const SUPERMARKET_CONFIGS = { ... } // <-- commented out
 
 // Interface for the structured product data after scraping
 export interface ScrapedProduct {
@@ -112,4 +143,40 @@ export interface ScrapedProduct {
   category: string; // Category name (e.g., "Dairy")
   lastUpdated: string; // Use ISO string for serialization compatibility
   productUrl: string; // Direct URL to the product on the store's website
+  categoryUrl?: string; // URL of the product's category
 }
+
+// Unified selectors mapping for all supermarkets
+export const SELECTORS = {
+  silpo: {
+    productCard: '.products-list__item',
+    productName: '.product-card__title',
+    currentPrice: '.product-card-price__displayPrice',
+    oldPrice: '.product-card-price__displayOldPrice',
+    imageUrl: '.product-card__product-img',
+    productLink: 'a.product-card',
+    nextPageButton: '.pagination__button--next', // Placeholder, verify!
+  },
+  atb: {
+    productCard: 'article.catalog-item',
+    productName: '.catalog-item__title a',
+    currentPrice: '.product-price__top',
+    oldPrice: '.product-price__bottom',
+    imageUrl: '.catalog-item__img',
+    productLink: '.catalog-item__title a',
+    nextPageButton: '.pagination__next', // Placeholder, verify if pagination exists
+  },
+  // TEMPLATE: Add new supermarkets as needed
+  // novus: {
+  //   productCard: '...',
+  //   productName: '...',
+  //   ...
+  // },
+};
+
+// Unified base URLs for all supermarkets
+export const BASE_URLS = {
+  silpo: 'https://silpo.ua',
+  atb: 'https://www.atbmarket.com',
+  // Add more supermarkets as needed
+};
