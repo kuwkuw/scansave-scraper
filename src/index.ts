@@ -20,28 +20,28 @@ async function runAllScrapers() {
 
     // --- Run Silpo Scraper ---
     if (!marketArg || marketArg === 'silpo') {
-      console.log('\n--- Running Silpo Scraper ---');
+    console.log('\n--- Running Silpo Scraper ---');
       for (const [categoryKey, urls] of Object.entries(CATEGORY_URLS)) {
         const categoryPath = urls.silpo;
         if (!categoryPath) continue;
         const categoryName = categoryKey.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
         const categoryUrl = categoryPath.startsWith('http') ? categoryPath : BASE_URLS.silpo + categoryPath;
-        console.log('\n' + '='.repeat(50));
+      console.log('\n' + '='.repeat(50));
         console.log(`[Silpo] Scraping ${categoryName} category`);
-        console.log(`[Silpo] URL: ${categoryUrl}`);
-        console.log(`[Silpo] Time: ${new Date().toLocaleString('uk-UA', { timeZone: 'Europe/Kyiv' })}`);
-        console.log('='.repeat(50));
-        try {
+      console.log(`[Silpo] URL: ${categoryUrl}`);
+      console.log(`[Silpo] Time: ${new Date().toLocaleString('uk-UA', { timeZone: 'Europe/Kyiv' })}`);
+      console.log('='.repeat(50));
+      try {
           const products = await scrapeSilpoCategory(categoryUrl, categoryName, categoryPath);
-          if (products.length > 0) {
-            console.log(`[Silpo] ✅ Found ${products.length} products in ${categoryName}`);
-            console.log('First product example:', JSON.stringify(products[0], null, 2));
-            await saveProductsToDatabase(products);
-          } else {
-            console.log(`[Silpo] ⚠️ No products found in ${categoryName} category.`);
-          }
-        } catch (error) {
-          console.error(`[Silpo] ❌ Error scraping ${categoryName} category:`, error);
+        if (products.length > 0) {
+          console.log(`[Silpo] ✅ Found ${products.length} products in ${categoryName}`);
+          console.log('First product example:', JSON.stringify(products[0], null, 2));
+          await saveProductsToDatabase(products);
+        } else {
+          console.log(`[Silpo] ⚠️ No products found in ${categoryName} category.`);
+        }
+      } catch (error) {
+        console.error(`[Silpo] ❌ Error scraping ${categoryName} category:`, error);
         }
       }
     }
