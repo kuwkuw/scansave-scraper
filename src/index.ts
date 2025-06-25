@@ -20,18 +20,16 @@ async function runAllScrapers() {
     // --- Run Silpo Scraper ---
     console.log('\n--- Running Silpo Scraper ---');
     
-    // Test with a single category first
-    const categoriesToScrape = {
-      dairy_eggs: 'Dairy & Eggs'
-    } as const;
+    // Scrape all categories
+    const categoriesToScrape = SUPERMARKET_CONFIGS.silpo.categories;
 
     console.log('Debug: Starting category iteration...');
     
-    for (const [categoryKey, categoryName] of Object.entries(categoriesToScrape)) {
-      const categoryPath = SUPERMARKET_CONFIGS.silpo.categories[categoryKey as keyof typeof SUPERMARKET_CONFIGS.silpo.categories];
+    for (const [categoryKey, categoryPath] of Object.entries(categoriesToScrape)) {
+      const categoryName = categoryKey.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
       const categoryUrl = categoryPath.startsWith('http') ? categoryPath : SUPERMARKET_CONFIGS.silpo.baseUrl + categoryPath;
       console.log('\n' + '='.repeat(50));
-      console.log(`[Silpo] Testing ${categoryName} category scraper`);
+      console.log(`[Silpo] Scraping ${categoryName} category`);
       console.log(`[Silpo] URL: ${categoryUrl}`);
       console.log(`[Silpo] Time: ${new Date().toLocaleString('uk-UA', { timeZone: 'Europe/Kyiv' })}`);
       console.log('='.repeat(50));
